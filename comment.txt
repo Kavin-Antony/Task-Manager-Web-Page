@@ -1,0 +1,113 @@
+# Task Management API Guide
+
+This application provides a Task Management system with Authentication, exposed via GraphQL and JSON:API.
+
+## 1. Setup
+
+Ensure you have run the migrations:
+```bash
+mix ash.migrate
+```
+
+Start the server:
+```bash
+mix phx.server
+```
+
+## 2. Authentication
+
+The API uses Bearer tokens. You must first register or sign in to get a token.
+
+### Register (GraphQL)
+Open GraphiQL at `http://localhost:4000/gql/playground`.
+
+```graphql
+mutation {
+  registerWithPassword(email: "user@example.com", password: "password123", passwordConfirmation: "password123") {
+    token
+    user {
+      id
+      email
+    }
+  }
+}
+```
+
+### Sign In (GraphQL)
+```graphql
+mutation {
+  signInWithPassword(email: "user@example.com", password: "password123") {
+    token
+    user {
+      id
+      email
+    }
+  }
+}
+```
+
+Copy the `token` from the response. You will use this in the `Authorization` header:
+`Authorization: Bearer <YOUR_TOKEN>`
+
+## 3. Tasks API (GraphQL)
+
+### Create a Task
+```graphql
+mutation {
+  createTask(input: {title: "My First Task", description: "This is a test", status: TODO}) {
+    result {
+      id
+      title
+      status
+    }
+    errors {
+      message
+    }
+  }
+}
+```
+
+### List Tasks
+```graphql
+query {
+  listTasks {
+    results {
+      id
+      title
+      status
+    }
+  }
+}
+```
+
+## 4. Tasks API (JSON:API)
+
+Base URL: `http://localhost:4000/api/json`
+
+### Create a Task
+**POST** `/api/json/tasks`
+
+Headers:
+- `Content-Type: application/vnd.api+json`
+- `Accept: application/vnd.api+json`
+- `Authorization: Bearer <YOUR_TOKEN>`
+
+Body:
+```json
+{
+  "data": {
+    "type": "task",
+    "attributes": {
+      "title": "JSON:API Task",
+      "description": "Created via curl",
+      "status": "todo"
+    }
+  }
+}
+```
+
+### List Tasks
+**GET** `/api/json/tasks`
+
+Headers:
+- `Authorization: Bearer <YOUR_TOKEN>`

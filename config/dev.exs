@@ -1,4 +1,5 @@
 import Config
+config :ash, policies: [show_policy_breakdowns?: true]
 
 # Configure your database
 config :api_oban, ApiOban.Repo,
@@ -68,7 +69,7 @@ config :api_oban, ApiObanWeb.Endpoint,
   ]
 
 # Enable dev routes for dashboard and mailbox
-config :api_oban, dev_routes: true
+config :api_oban, dev_routes: true, token_signing_secret: "AX21TM+HhUKoFxPxJkHjzk7BDYzZPVG/"
 
 # Do not include metadata nor timestamps in development logs
 config :logger, :default_formatter, format: "[$level] $message\n"

@@ -11,11 +11,19 @@ defmodule ApiOban.Application do
       ApiObanWeb.Telemetry,
       ApiOban.Repo,
       {DNSCluster, query: Application.get_env(:api_oban, :dns_cluster_query) || :ignore},
+      {Oban,
+       AshOban.config(
+         Application.fetch_env!(:api_oban, :ash_domains),
+         Application.fetch_env!(:api_oban, Oban)
+       )},
       {Phoenix.PubSub, name: ApiOban.PubSub},
       # Start a worker by calling: ApiOban.Worker.start_link(arg)
       # {ApiOban.Worker, arg},
       # Start to serve requests, typically the last entry
-      ApiObanWeb.Endpoint
+      ApiObanWeb.Endpoint,
+      {Absinthe.Subscription, ApiObanWeb.Endpoint},
+      AshGraphql.Subscription.Batcher,
+      {AshAuthentication.Supervisor, [otp_app: :api_oban]}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
